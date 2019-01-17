@@ -2,9 +2,14 @@ const pkg = require('./package')
 const Api = 'https://api.quwi.com/v2/'
 const routerBase = process.env.DEPLOY_ENV === 'GH_PAGES' ? {
   router: {
-    base: '/<repository-name>/'
+    middleware: ['auth'],
+    base: '/vue-nuxt-udimi/'
   }
-} : {}
+} : {
+  router: {
+    middleware: ['auth']
+  }
+}
 
 module.exports = {
   mode: 'universal',
@@ -28,9 +33,7 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/auth'
   ],
-  router: {
-    middleware: ['auth']
-  },
+  ...routerBase,
   auth: {
     redirect: {
       login: '/login',
@@ -58,7 +61,6 @@ module.exports = {
     baseURL: process.env.API_URL || 'https://api.quwi.com/v2/',
     timeout: 10000
   },
-  ...routerBase,
   build: {
     /*
     ** Run ESLint on save
