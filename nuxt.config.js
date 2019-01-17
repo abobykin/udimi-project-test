@@ -1,5 +1,10 @@
 const pkg = require('./package')
 const Api = 'https://api.quwi.com/v2/'
+const routerBase = process.env.DEPLOY_ENV === 'GH_PAGES' ? {
+  router: {
+    base: '/<repository-name>/'
+  }
+} : {}
 
 module.exports = {
   mode: 'universal',
@@ -53,12 +58,23 @@ module.exports = {
     baseURL: process.env.API_URL || 'https://api.quwi.com/v2/',
     timeout: 10000
   },
+  ...routerBase,
   build: {
+    /*
+    ** Run ESLint on save
+    */
     /*
     ** You can extend webpack config here
     */
-    extend(config, ctx) {
-
-    }
+    extend (config, { isDev, isClient }) {
+      if (isDev && isClient) {
+        config.module.rules.push({
+          enforce: 'pre',
+          test: /\.(js|vue)$/,
+          loader: 'eslint-loader',
+          exclude: /(node_modules)/
+        })
+      }
+    },
   }
 }
